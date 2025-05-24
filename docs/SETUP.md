@@ -117,6 +117,26 @@ research-integrator/
 - `LOG_LEVEL`: Logging level (default: "INFO")
 - `LOG_FILE`: Log file path (default: "logs/research_integrator.log")
 
+## API Keys Setup
+
+### PubMed API Key
+To use the PubMed integration, you'll need an API key from NCBI:
+
+1. Create an NCBI account:
+   - Visit https://www.ncbi.nlm.nih.gov/
+   - Click "Log in" in the top right
+   - If you don't have an account, you'll see an option to create one on the login page
+
+2. Once logged in:
+   - Navigate to https://www.ncbi.nlm.nih.gov/account/settings/
+   - Find "API Key Management" in your account settings
+   - Generate a new API key if you don't have one
+
+3. Add the API key to your .env file:
+   ```
+   PUBMED_API_KEY=your_api_key_here
+   ```
+
 ## Usage
 
 ### Command Line
