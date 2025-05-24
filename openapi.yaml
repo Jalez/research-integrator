@@ -1,0 +1,667 @@
+openapi: 3.0.3
+info:
+  title: Research Integrator API
+  description: |
+    API for integrating research data from multiple sources including PubMed, arXiv, and LLM services.
+
+    This API provides endpoints for searching, fetching, summarizing research papers,
+    managing user preferences, and handling context data.
+  version: 1.0.0
+  contact:
+    name: Research Integrator Team
+    email: support@research-integrator.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.research-integrator.com
+    description: Production server
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /search:
+    post:
+      summary: Search for research papers
+      description: Search for research papers across multiple sources (PubMed, arXiv, etc.)
+      operationId: searchPapers
+      tags:
+        - Search
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /fetch:
+    post:
+      summary: Fetch paper details
+      description: Fetch detailed information for specific research papers
+      operationId: fetchPaper
+      tags:
+        - Fetch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FetchRequest'
+      responses:
+        '200':
+          description: Paper details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Paper not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /summarize:
+    post:
+      summary: Summarize research papers
+      description: Generate AI-powered summaries of research papers
+      operationId: summarizePaper
+      tags:
+        - Summarize
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SummarizeRequest'
+      responses:
+        '200':
+          description: Paper summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummarizeResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /prefs:
+    get:
+      summary: Get user preferences
+      description: Retrieve user preferences and settings
+      operationId: getPreferences
+      tags:
+        - Preferences
+      responses:
+        '200':
+          description: User preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferencesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update user preferences
+      description: Update user preferences and settings
+      operationId: updatePreferences
+      tags:
+        - Preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreferencesRequest'
+      responses:
+        '200':
+          description: Preferences updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PreferencesResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /context:
+    post:
+      summary: Manage context data
+      description: Store and retrieve context data for research sessions
+      operationId: manageContext
+      tags:
+        - Context
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContextRequest'
+      responses:
+        '200':
+          description: Context data processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: Get context data
+      description: Retrieve stored context data for research sessions
+      operationId: getContext
+      tags:
+        - Context
+      parameters:
+        - name: session_id
+          in: query
+          description: Session ID to retrieve context for
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Context data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContextResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Context not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: API key for authentication. Format: "Bearer YOUR_API_KEY"
+
+  schemas:
+    # Error Response Schema
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code string
+          example: "INVALID_REQUEST"
+        message:
+          type: string
+          description: User-friendly error message
+          example: "The request is invalid or malformed"
+        details:
+          type: object
+          description: Optional structured details about the error
+          additionalProperties: true
+          example:
+            field: "query"
+            reason: "Query parameter is required"
+
+    # Paper Schema
+    Paper:
+      type: object
+      required:
+        - id
+        - title
+        - source
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the paper
+          example: "pubmed:12345678"
+        title:
+          type: string
+          description: Title of the paper
+          example: "Machine Learning in Healthcare: A Comprehensive Review"
+        authors:
+          type: array
+          items:
+            type: string
+          description: List of authors
+          example: ["Smith, J.", "Doe, A.", "Johnson, M."]
+        abstract:
+          type: string
+          description: Abstract of the paper
+          example: "This paper presents a comprehensive review of machine learning applications in healthcare..."
+        source:
+          type: string
+          enum: ["pubmed", "arxiv", "other"]
+          description: Source of the paper
+          example: "pubmed"
+        publication_date:
+          type: string
+          format: date
+          description: Publication date
+          example: "2023-12-15"
+        journal:
+          type: string
+          description: Journal name
+          example: "Nature Medicine"
+        doi:
+          type: string
+          description: Digital Object Identifier
+          example: "10.1038/s41591-023-02345-6"
+        url:
+          type: string
+          format: uri
+          description: URL to the paper
+          example: "https://pubmed.ncbi.nlm.nih.gov/12345678/"
+        keywords:
+          type: array
+          items:
+            type: string
+          description: Keywords associated with the paper
+          example: ["machine learning", "healthcare", "artificial intelligence"]
+
+    # Search Request/Response
+    SearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: Search query
+          example: "machine learning healthcare"
+        sources:
+          type: array
+          items:
+            type: string
+            enum: ["pubmed", "arxiv", "all"]
+          description: Sources to search in
+          default: ["all"]
+          example: ["pubmed", "arxiv"]
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: Maximum number of results to return
+          example: 20
+        offset:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Number of results to skip
+          example: 0
+        filters:
+          type: object
+          description: Additional search filters
+          properties:
+            date_from:
+              type: string
+              format: date
+              description: Filter papers from this date
+              example: "2020-01-01"
+            date_to:
+              type: string
+              format: date
+              description: Filter papers to this date
+              example: "2023-12-31"
+            journal:
+              type: string
+              description: Filter by journal name
+              example: "Nature"
+
+    SearchResponse:
+      type: object
+      required:
+        - papers
+        - total
+        - query
+      properties:
+        papers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Paper'
+          description: List of papers matching the search
+        total:
+          type: integer
+          description: Total number of papers found
+          example: 150
+        query:
+          type: string
+          description: Original search query
+          example: "machine learning healthcare"
+        offset:
+          type: integer
+          description: Number of results skipped
+          example: 0
+        limit:
+          type: integer
+          description: Maximum number of results returned
+          example: 20
+
+    # Fetch Request/Response
+    FetchRequest:
+      type: object
+      required:
+        - paper_ids
+      properties:
+        paper_ids:
+          type: array
+          items:
+            type: string
+          description: List of paper IDs to fetch
+          example: ["pubmed:12345678", "arxiv:2301.12345"]
+        include_full_text:
+          type: boolean
+          default: false
+          description: Whether to include full text if available
+          example: false
+
+    FetchResponse:
+      type: object
+      required:
+        - papers
+      properties:
+        papers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Paper'
+          description: List of fetched papers with detailed information
+
+    # Summarize Request/Response
+    SummarizeRequest:
+      type: object
+      required:
+        - paper_id
+      properties:
+        paper_id:
+          type: string
+          description: ID of the paper to summarize
+          example: "pubmed:12345678"
+        summary_type:
+          type: string
+          enum: ["brief", "detailed", "technical"]
+          default: "brief"
+          description: Type of summary to generate
+          example: "brief"
+        max_length:
+          type: integer
+          minimum: 50
+          maximum: 1000
+          default: 200
+          description: Maximum length of summary in words
+          example: 200
+
+    SummarizeResponse:
+      type: object
+      required:
+        - paper_id
+        - summary
+        - summary_type
+      properties:
+        paper_id:
+          type: string
+          description: ID of the summarized paper
+          example: "pubmed:12345678"
+        summary:
+          type: string
+          description: Generated summary
+          example: "This paper presents a comprehensive review of machine learning applications in healthcare, covering recent advances in diagnostic imaging, drug discovery, and personalized medicine."
+        summary_type:
+          type: string
+          description: Type of summary generated
+          example: "brief"
+        word_count:
+          type: integer
+          description: Number of words in the summary
+          example: 25
+        generated_at:
+          type: string
+          format: date-time
+          description: Timestamp when summary was generated
+          example: "2023-12-15T10:30:00Z"
+
+    # Preferences Request/Response
+    PreferencesRequest:
+      type: object
+      properties:
+        default_sources:
+          type: array
+          items:
+            type: string
+            enum: ["pubmed", "arxiv"]
+          description: Default sources for searches
+          example: ["pubmed", "arxiv"]
+        default_limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Default number of results per search
+          example: 20
+        summary_preferences:
+          type: object
+          properties:
+            default_type:
+              type: string
+              enum: ["brief", "detailed", "technical"]
+              description: Default summary type
+              example: "brief"
+            max_length:
+              type: integer
+              minimum: 50
+              maximum: 1000
+              description: Default maximum summary length
+              example: 200
+        notification_settings:
+          type: object
+          properties:
+            email_notifications:
+              type: boolean
+              description: Enable email notifications
+              example: true
+            search_alerts:
+              type: boolean
+              description: Enable search alerts
+              example: false
+
+    PreferencesResponse:
+      type: object
+      required:
+        - user_id
+        - preferences
+        - updated_at
+      properties:
+        user_id:
+          type: string
+          description: User identifier
+          example: "user_12345"
+        preferences:
+          $ref: '#/components/schemas/PreferencesRequest'
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp when preferences were last updated
+          example: "2023-12-15T10:30:00Z"
+
+    # Context Request/Response
+    ContextRequest:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum: ["store", "update", "delete"]
+          description: Action to perform on context data
+          example: "store"
+        session_id:
+          type: string
+          description: Session identifier
+          example: "session_abc123"
+        context_data:
+          type: object
+          description: Context data to store or update
+          additionalProperties: true
+          example:
+            search_history: ["machine learning", "healthcare AI"]
+            current_papers: ["pubmed:12345678", "arxiv:2301.12345"]
+            research_focus: "AI in medical diagnosis"
+
+    ContextResponse:
+      type: object
+      required:
+        - session_id
+        - action
+        - timestamp
+      properties:
+        session_id:
+          type: string
+          description: Session identifier
+          example: "session_abc123"
+        action:
+          type: string
+          description: Action that was performed
+          example: "store"
+        context_data:
+          type: object
+          description: Current context data
+          additionalProperties: true
+          example:
+            search_history: ["machine learning", "healthcare AI"]
+            current_papers: ["pubmed:12345678", "arxiv:2301.12345"]
+            research_focus: "AI in medical diagnosis"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the operation
+          example: "2023-12-15T10:30:00Z"
+
+tags:
+  - name: Search
+    description: Search for research papers across multiple sources
+  - name: Fetch
+    description: Fetch detailed information for specific papers
+  - name: Summarize
+    description: Generate AI-powered summaries of research papers
+  - name: Preferences
+    description: Manage user preferences and settings
+  - name: Context
+    description: Manage context data for research sessions
